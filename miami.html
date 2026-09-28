@@ -262,10 +262,16 @@
   initGallery(miamiImages, "Miami Muse");
 
   // ===== AVAILABILITY =====
-  const miamiBlockedDates = [
-    // "2026-09-05", "2026-09-06", "2026-09-07"
-  ];
-  renderCalendar("calendar-miami", miamiBlockedDates, 2);
+  // Pulls live blocked dates from Airbnb + VRBO + your direct bookings
+  fetch("/api/availability?property=miami")
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      renderCalendar("calendar-miami", data.blocked || [], 2);
+    })
+    .catch(function (err) {
+      console.error("Availability fetch failed:", err);
+      renderCalendar("calendar-miami", [], 2);
+    });
 
   // ===== PAYMENT =====
   const STRIPE_LINK_MIAMI = "PASTE_YOUR_STRIPE_PAYMENT_LINK_HERE";

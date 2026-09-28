@@ -262,11 +262,16 @@
   initGallery(westParkImages, "West Park");
 
   // ===== AVAILABILITY =====
-  // Add any date that's already booked, in "YYYY-MM-DD" format.
-  const westParkBlockedDates = [
-    // "2026-09-05", "2026-09-06", "2026-09-07"
-  ];
-  renderCalendar("calendar-westpark", westParkBlockedDates, 2);
+  // Pulls live blocked dates from Airbnb + VRBO + your direct bookings
+  fetch("/api/availability?property=west-park")
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      renderCalendar("calendar-westpark", data.blocked || [], 2);
+    })
+    .catch(function (err) {
+      console.error("Availability fetch failed:", err);
+      renderCalendar("calendar-westpark", [], 2);
+    });
 
   // ===== PAYMENT =====
   // Paste your Stripe Payment Link URL below once you've created one (see README).
